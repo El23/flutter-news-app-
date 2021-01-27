@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_some_news/helper/data.dart';
+import 'package:flutter_app_some_news/helper/news.dart';
+import 'package:flutter_app_some_news/models/article_model.dart';
 import 'package:flutter_app_some_news/models/category_model.dart';
+import 'package:flutter_app_some_news/views_/articles.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -10,6 +14,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<CategoryModel> categories = new List<CategoryModel>();
+  List<ArticleModel> articles = new List<ArticleModel>();
+  bool _loading = true;
 
   @override
   void initState() {
@@ -17,46 +23,77 @@ class _HomeState extends State<Home> {
     categories = getCategories();
   }
 
+  getNews() async {
+    News newsClass = News();
+    await newsClass.getNews();
+    articles = newsClass.news;
+    setState(() {
+      _loading = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
               "NEWS",
               style: TextStyle(color: Colors.white),
             )
           ],
-
         ),
-
+        centerTitle: true,
         elevation: 0.0,
       ),
-
-      body: Container(
-
-        child: Column(
-
-          children: <Widget>[
-            SizedBox(height: 10,),
-            Container(
-              height: 70,
-              child: ListView.builder(
-                itemCount: categories.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return CategoryTile(
-                    categoryName: categories[index].categoryName,
-                    imgUrl: categories[index].imgUrl,
-                  );
-                },
+      body: _loading
+          ? Center(
+              child: Container(
+                child: CircularProgressIndicator(),
               ),
             )
-          ],
-        ),
-      ),
+          : Container(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 70,
+                    child: ListView.builder(
+                      itemCount: categories.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return CategoryTile(
+                          categoryName: categories[index].categoryName,
+                          imgUrl: categories[index].imgUrl,
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: ListView.builder(
+                      itemCount: articles.length,
+                      shrinkWrap: true,
+                      physics: ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return BlogTile(
+                          imageUrl: articles[index].urlToImage,
+                          title: articles[index].title,
+                          description: articles[index].description,
+                          url: articles[index].url,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }
@@ -69,33 +106,29 @@ class CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
-      onTap: (){
-        
-      },
+      onTap: () {},
       child: Container(
         margin: const EdgeInsets.only(right: 8),
-
         child: Stack(
           children: <Widget>[
-
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imgUrl,
+              child: CachedNetworkImage(
+                imageUrl: imgUrl,
                 width: 120,
                 height: 60,
                 fit: BoxFit.cover,
               ),
             ),
             Container(
-              width: 120, height: 60,
+                width: 120,
+                height: 60,
                 alignment: Alignment.center,
                 child: Text(
-              categoryName,
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            )),
+                  categoryName,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                )),
           ],
         ),
       ),
@@ -107,22 +140,40 @@ class BlogTile extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String description;
-  BlogTile({this.title,this.description,this.imageUrl});
+  final String url;
 
+
+  BlogTile({this.title, this.description, this.imageUrl,this.url});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children:<Widget>
-        [
-          Image.asset(imageUrl),
-          Text(title),
-          Text(description)
-
-        ],
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Articles(
+          blogUrl: url,
+        )));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          children: <Widget>[
+            ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(imageUrl)),
+            Text(
+              title,
+              style: TextStyle(color: Colors.black),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Text(
+              description,
+              style: TextStyle(color: Colors.black54),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
