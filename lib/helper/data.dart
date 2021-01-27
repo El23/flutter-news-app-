@@ -16,12 +16,12 @@ categoryModel.imgUrl =  "assets/general.jpg";
 category.add(categoryModel);
 categoryModel = new CategoryModel();
 
-categoryModel.categoryName = "IT news";
+categoryModel.categoryName = "technology";
 categoryModel.imgUrl =  "assets/simvol.jpg";
 category.add(categoryModel);
 categoryModel = new CategoryModel();
 
-categoryModel.categoryName = "travel";
+categoryModel.categoryName = "health";
 categoryModel.imgUrl =  "assets/pilot.jpg";
 category.add(categoryModel);
 categoryModel = new CategoryModel();

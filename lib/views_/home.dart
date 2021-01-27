@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_some_news/helper/data.dart';
 import 'package:flutter_app_some_news/helper/news.dart';
 import 'package:flutter_app_some_news/models/article_model.dart';
 import 'package:flutter_app_some_news/models/category_model.dart';
 import 'package:flutter_app_some_news/views_/articles.dart';
+
+import 'category.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -107,7 +110,14 @@ class CategoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute
+          (
+            builder: (context)=>Categories(
+              category: categoryName.toString().toLowerCase(),
+            )
+        ));
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 8),
         child: Stack(
