@@ -27,7 +27,7 @@ category.add(categoryModel);
 categoryModel = new CategoryModel();
 
 categoryModel.categoryName = "entertainment";
-categoryModel.imgUrl =  "assets/screenshot_6.jpg";
+categoryModel.imgUrl =  "assets/star.jpg";
 category.add(categoryModel);
 categoryModel = new CategoryModel();
 
